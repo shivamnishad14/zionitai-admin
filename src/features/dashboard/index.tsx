@@ -30,7 +30,7 @@ export default function Dashboard() {
       </Header>
 
       {/* ===== Main ===== */}
-      <Main>
+      <Main> 
         <div className='mb-2 flex items-center justify-between space-y-2'>
           <h1 className='text-2xl font-bold tracking-tight'>Dashboard</h1>
           <div className='flex items-center space-x-2'>
@@ -45,10 +45,10 @@ export default function Dashboard() {
           <div className='w-full overflow-x-auto pb-2'>
             <TabsList>
               <TabsTrigger value='overview'>Overview</TabsTrigger>
-              <TabsTrigger value='analytics' disabled>
+              <TabsTrigger value='analytics' >
                 Analytics
               </TabsTrigger>
-              <TabsTrigger value='reports' disabled>
+              <TabsTrigger value='reports' >
                 Reports
               </TabsTrigger>
               <TabsTrigger value='notifications' disabled>
@@ -181,6 +181,12 @@ export default function Dashboard() {
                 </CardContent>
               </Card>
             </div>
+          </TabsContent>
+          <TabsContent value='analytics' className='space-y-4'>
+         <h1>This is Analytics</h1>
+          </TabsContent>
+          <TabsContent value='reports' className='space-y-4'>
+         <h1>This is Report</h1>
           </TabsContent>
         </Tabs>
       </Main>
