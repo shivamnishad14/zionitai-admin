@@ -18,6 +18,7 @@ import {
   IconUserCog,
   IconUserOff,
   IconUsers,
+  IconServer,
 } from '@tabler/icons-react'
 import { Command } from 'lucide-react'
 import { type SidebarData } from '../types'
@@ -65,6 +66,16 @@ export const sidebarData: SidebarData = {
           title: 'Users',
           url: '/users',
           icon: IconUsers,
+        },
+        {
+          title: 'Machine Inventory',
+          url: '/machines/page',
+          icon: IconServer,
+        },
+        {
+          title: 'Parts Inventory',
+          url: '/parts',
+          icon: IconServer,
         },
       ],
     },
