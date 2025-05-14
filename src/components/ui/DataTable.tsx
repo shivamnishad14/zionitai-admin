@@ -2,7 +2,7 @@ import React, { useState, useMemo } from "react";
 import {
   useReactTable,
   getCoreRowModel,
-  getPaginationRowModel,
+//   getPaginationRowModel,
   getSortedRowModel,
   getFilteredRowModel,
   flexRender,
@@ -24,6 +24,8 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Switch } from "@/components/ui/switch";
 import { IconEdit, IconTrash, IconFileExport, IconEye, IconPlus, IconDotsVertical, IconColumns } from "@tabler/icons-react";
 import * as XLSX from "xlsx";
+import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
 
 interface DataTableProps<T extends object> {
   data: T[];
@@ -59,11 +61,16 @@ interface DataTableProps<T extends object> {
   allData?: () => Promise<T[]>;
   fileName?: string;
   initialHiddenColumns?: string[];
+  showSearch?: boolean;
+  searchPlaceholder?: string;
+  searchColumn?: string;
+  searchLabel?: string;
 }
 
 export function DataTable<T extends object>({
   data = [],
   columns = [],
+  // @ts-ignore - Might be used in future implementations
   isLoading = false,
   onAddClick,
   startIcon = <IconPlus />,
@@ -90,11 +97,18 @@ export function DataTable<T extends object>({
   showExportButton = true,
   showHideColumns = true,
   showFilter = true,
+  // @ts-ignore - Might be used in future implementations
   onFilterChange,
+  // @ts-ignore - Might be used in future implementations
   onSelectionChanged,
   allData,
   fileName,
   initialHiddenColumns = [],
+  showSearch = false,
+  searchPlaceholder = "Search...",
+  searchColumn = "title",
+  // @ts-ignore - Might be used in future implementations
+  searchLabel = "Search",
 }: DataTableProps<T>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -118,7 +132,7 @@ export function DataTable<T extends object>({
         id: "actions",
         header: "Actions",
         cell: ({ row }) => {
-          const disabledKeys = getDisabledKeys(row.original);
+        //   const disabledKeys = getDisabledKeys(row.original);
           const actionComponentsList = Array.isArray(actionComponents) 
             ? actionComponents 
             : [];
@@ -169,8 +183,17 @@ export function DataTable<T extends object>({
     return cols;
   }, [columns, showActions, actionComponents, showEdit, showDelete, showView, onEditClick, onDeleteClick, onViewClick, getDisabledKeys]);
 
+  // Calculate paginated data
+  const paginatedData = useMemo(() => {
+    if (!pagination) return data;
+    
+    const startIndex = (page - 1) * rowsPerPage;
+    const endIndex = startIndex + rowsPerPage;
+    return data.slice(startIndex, endIndex);
+  }, [data, page, rowsPerPage, pagination]);
+
   const table = useReactTable({
-    data,
+    data: paginatedData, // Use paginated data instead of all data
     columns: tableColumns,
     state: {
       sorting,
@@ -184,7 +207,6 @@ export function DataTable<T extends object>({
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
   });
@@ -229,6 +251,21 @@ export function DataTable<T extends object>({
             </Button>
           )}
           {addComponent && <div>{addComponent}</div>}
+          {showSearch && (
+            <div className="flex items-center gap-2">
+              <div className="relative">
+                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder={searchPlaceholder}
+                  value={(table.getColumn(searchColumn)?.getFilterValue() as string) ?? ''}
+                  onChange={(event) =>
+                    table.getColumn(searchColumn)?.setFilterValue(event.target.value)
+                  }
+                  className="pl-8 h-8 w-[150px] lg:w-[250px]"
+                />
+              </div>
+            </div>
+          )}
         </div>
         <div className="flex items-center gap-2">
           {showFilter && (
@@ -338,27 +375,38 @@ export function DataTable<T extends object>({
       </div>
 
       {/* Pagination */}
-      {showPagination && (
-        <Pagination>
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious onClick={() => setPage?.(page - 1)} />
-            </PaginationItem>
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-              <PaginationItem key={p}>
-                <PaginationLink
-                  isActive={p === page}
-                  onClick={() => setPage?.(p)}
-                >
-                  {p}
-                </PaginationLink>
+      {showPagination && pagination && (
+        <div className="flex items-center justify-between px-2">
+          <div className="flex-1 text-sm text-muted-foreground">
+            Showing {((page - 1) * rowsPerPage) + 1} to {Math.min(page * rowsPerPage, data.length)} of {data.length} entries
+          </div>
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious 
+                  onClick={() => setPage?.(Math.max(1, page - 1))}
+                  disabled={page === 1}
+                />
               </PaginationItem>
-            ))}
-            <PaginationItem>
-              <PaginationNext onClick={() => setPage?.(page + 1)} />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                <PaginationItem key={p}>
+                  <PaginationLink
+                    isActive={p === page}
+                    onClick={() => setPage?.(p)}
+                  >
+                    {p}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+              <PaginationItem>
+                <PaginationNext 
+                  onClick={() => setPage?.(Math.min(totalPages, page + 1))}
+                  disabled={page === totalPages}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
       )}
     </div>
   );

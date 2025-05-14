@@ -1,9 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router'
-// import { PartInventoryPage } from '@/components/parts/PartInventoryPage'
-import PartInventoryPage from '@/components/parts/PartInventoryPage'
+// import { MainInventory } from '@/components/parts/PartInventoryPage'
+import MainInventory from '@/components/parts/mainInventory'
 
 export const Route = createFileRoute('/_authenticated/parts/')({
-  component: PartInventoryPage,
+  component: MainInventory,
 })
 
 

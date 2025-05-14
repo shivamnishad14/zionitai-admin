@@ -3,8 +3,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-// Define Machine type for props
-export type Machine = {
+// Define Part type for props
+export type Part = {
   machineId: number;
   machineName: string;
   capacity: string;
@@ -14,16 +14,16 @@ export type Machine = {
   updDatetime: string;
 };
 
-interface AddOrEditMachineDialogProps {
+interface AddOrEditPartDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (data: Machine, mode: "add" | "edit") => Promise<void>;
-  initialData?: Partial<Machine>;
+  onSubmit: (data: Part, mode: "add" | "edit") => Promise<void>;
+  initialData?: Partial<Part>;
   mode: "add" | "edit";
 }
 
 // Initial form state
-const getInitialFormState = (initialData: Partial<Machine> = {}): Machine => ({
+const getInitialFormState = (initialData: Partial<Part> = {}): Part => ({
   machineId: initialData.machineId || 0,
   machineName: initialData.machineName || "",
   capacity: initialData.capacity || "",
@@ -33,19 +33,19 @@ const getInitialFormState = (initialData: Partial<Machine> = {}): Machine => ({
   updDatetime: initialData.updDatetime || new Date().toISOString(),
 });
 
-export function AddMachineDialog({
+export function AddPartDialog({
   open,
   onOpenChange,
   onSubmit,
   initialData = {},
   mode,
-}: AddOrEditMachineDialogProps) {
+}: AddOrEditPartDialogProps) {
   // Use ref to track if component is mounted and prevent state updates after unmount
   const mounted = useRef(false);
   const initialDataRef = useRef(initialData);
 
   // Initialize form state
-  const [form, setForm] = useState<Machine>(() => getInitialFormState(initialData));
+  const [form, setForm] = useState<Part>(() => getInitialFormState(initialData));
   const [loading, setLoading] = useState(false);
 
   // Set mounted ref on mount
@@ -106,7 +106,7 @@ export function AddMachineDialog({
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{mode === "add" ? "Add New Machine" : "Update Machine"}</DialogTitle>
+          <DialogTitle>{mode === "add" ? "Add New Part" : "Update Part"}</DialogTitle>
           <DialogDescription>
             Fill in the details below to {mode === "add" ? "add a new" : "update the"} machine.
           </DialogDescription>
@@ -114,7 +114,7 @@ export function AddMachineDialog({
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input 
             name="machineName" 
-            placeholder="Machine Name" 
+            placeholder="Part Name" 
             value={form.machineName} 
             onChange={handleChange} 
             required={true}
@@ -152,7 +152,7 @@ export function AddMachineDialog({
           />
           <DialogFooter>
             <Button type="submit" disabled={loading}>
-              {loading ? (mode === "add" ? "Adding..." : "Updating...") : (mode === "add" ? "Add Machine" : "Update Machine")}
+              {loading ? (mode === "add" ? "Adding..." : "Updating...") : (mode === "add" ? "Add Part" : "Update Part")}
             </Button>
           </DialogFooter>
         </form>
