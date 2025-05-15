@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { AddComponentDialog, Component } from '@/components/parts/add-component-dialog'
-import * as React from 'react'
+// import * as React from 'react'
 import { ColumnDef } from "@tanstack/react-table";
 import { useCallback, useMemo, useState } from "react";
 import { DataTable } from '../ui/DataTable'

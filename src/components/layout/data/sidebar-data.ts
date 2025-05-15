@@ -1,24 +1,11 @@
 import {
-  IconBarrierBlock,
-  IconBrowserCheck,
-  IconBug,
-  IconChecklist,
-  IconError404,
-  IconHelp,
-  IconLayoutDashboard,
-  IconLock,
-  IconLockAccess,
-  IconMessages,
-  IconNotification,
+  IconBrowserCheck, IconChecklist, IconHelp,
+  IconLayoutDashboard, IconNotification,
   IconPackages,
-  IconPalette,
-  IconServerOff,
-  IconSettings,
+  IconPalette, IconSettings,
   IconTool,
-  IconUserCog,
-  IconUserOff,
-  IconUsers,
-  IconServer,
+  IconUserCog, IconUsers,
+  IconServer
 } from '@tabler/icons-react'
 import { Command } from 'lucide-react'
 import { type SidebarData } from '../types'
