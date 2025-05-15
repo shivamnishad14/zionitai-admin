@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { AddMachineDialog, Machine } from '@/components/machines/add-machine-dialog'
+import { AddCustomerDialog } from './add-customer-dialog'
 import * as React from 'react'
 import { ColumnDef } from "@tanstack/react-table";
 import { useCallback, useMemo, useState } from "react";
@@ -9,7 +9,7 @@ import { toast } from 'sonner'
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { Loader2 } from "lucide-react";
-import { useMachineCount, useMachines, useMachineMutations } from '@/hooks/useMachineQueries'
+import { Customer, useCustomers, useCustomerCount, useCustomerMutations } from '@/hooks/useCustomerQueries'
 
 // Constants
 const DEFAULT_PAGE_SIZE = 10;
@@ -44,60 +44,33 @@ const ColorPreview = React.memo(({ color }: { color: string }) => (
 ColorPreview.displayName = 'ColorPreview';
 
 // Table columns definition
-const createColumns = (): ColumnDef<Machine>[] => [
-  { 
-    accessorKey: "machineId", 
-    header: "ID",
-    cell: ({ row }) => <span className="font-medium">{row.original.machineId}</span>
-  },
-  { 
-    accessorKey: "machineName", 
-    header: "Name",
-    cell: ({ row }) => <span className="font-medium">{row.original.machineName}</span>
-  },
-  { 
-    accessorKey: "capacity", 
-    header: "Capacity",
-    cell: ({ row }) => <span>{row.original.capacity}</span>
-  },
-  { 
-    accessorKey: "configuration", 
-    header: "Configuration",
-    cell: ({ row }) => <span>{row.original.configuration}</span>
-  },
-  { 
-    accessorKey: "machineColor", 
-    header: "Color",
-    cell: ({ row }) => <ColorPreview color={row.original.machineColor} />
-  },
-  { 
-    accessorKey: "active", 
-    header: "Status",
-    cell: ({ row }) => <ActiveStatus active={row.original.active} />
-  },
-  { 
-    accessorKey: "updDatetime", 
-    header: "Updated At",
-    cell: ({ row }) => <span className="text-muted-foreground">{formatDate(row.original.updDatetime)}</span>
-  },
+const createColumns = (): ColumnDef<Customer>[] => [
+  { accessorKey: "customerId", header: "ID", cell: ({ row }) => <span className="font-medium">{row.original.customerId}</span> },
+  { accessorKey: "customerName", header: "Name", cell: ({ row }) => <span className="font-medium">{row.original.customerName}</span> },
+  { accessorKey: "address", header: "Address", cell: ({ row }) => <span>{row.original.address}</span> },
+  { accessorKey: "pincode", header: "Pincode", cell: ({ row }) => <span>{row.original.pincode}</span> },
+  { accessorKey: "ph_number", header: "Phone", cell: ({ row }) => <span>{row.original.ph_number}</span> },
+  { accessorKey: "city", header: "City", cell: ({ row }) => <span>{row.original.city}</span> },
+  { accessorKey: "active", header: "Status", cell: ({ row }) => <ActiveStatus active={row.original.active} /> },
+  { accessorKey: "addDatetime", header: "Added At", cell: ({ row }) => <span className="text-muted-foreground">{formatDate(row.original.addDatetime)}</span> },
 ];
 
-export function MachineInventoryPage() {
+export function CustomerInventoryPage() {
   // State management
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [dialogMode, setDialogMode] = useState<'add' | 'edit'>('add');
-  const [selectedMachine, setSelectedMachine] = useState<Machine | null>(null);
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(DEFAULT_PAGE_SIZE);
 
   // React Query hooks
-  const { data: totalItems = 0, isLoading: isCountLoading } = useMachineCount();
+  const { data: totalItems = 0, isLoading: isCountLoading } = useCustomerCount();
   const { 
-    data: machines = [], 
-    isLoading: isMachinesLoading,
-    isFetching: isMachinesFetching
-  } = useMachines(currentPage, rowsPerPage);
-  const { addMutation, updateMutation } = useMachineMutations();
+    data: customers = [], 
+    isLoading: isCustomersLoading,
+    isFetching: isCustomersFetching
+  } = useCustomers(currentPage, rowsPerPage);
+  const { addMutation } = useCustomerMutations();
 
   // Memoized values
   const totalPages = useMemo(() => Math.ceil(totalItems / rowsPerPage), [totalItems, rowsPerPage]);
@@ -128,51 +101,50 @@ export function MachineInventoryPage() {
     }
   }, [totalItems, currentPage]);
 
-  // Handle machine submit
-  const handleMachineSubmit = useCallback(async (form: Machine, mode: "add" | "edit") => {
+  // Handle customer submit
+  const handleCustomerSubmit = useCallback(async (form: Customer, mode: "add" | "edit") => {
     try {
-      const mutation = mode === "add" ? addMutation : updateMutation;
+      const mutation = addMutation; // Only add for now
       const res = await mutation.mutateAsync(form);
-      
-      toast.success(res.message || (mode === "add" ? "Machine added!" : "Machine updated!"), { duration: 3000 });
+      toast.success(res.message || (mode === "add" ? "Customer added!" : "Customer updated!"), { duration: 3000 });
       setIsDialogOpen(false);
-      setSelectedMachine(null);
+      setSelectedCustomer(null);
     } catch (err) {
-      toast.error("Error saving machine", { duration: 3000 });
+      toast.error("Error saving customer", { duration: 3000 });
     }
-  }, [addMutation, updateMutation]);
+  }, [addMutation]);
 
   const handleOpenAddDialog = useCallback(() => {
     setDialogMode('add');
-    setSelectedMachine(null);
+    setSelectedCustomer(null);
     setIsDialogOpen(true);
   }, []);
 
-  const handleOpenEditDialog = useCallback((machine: Machine) => {
+  const handleOpenEditDialog = useCallback((customer: Customer) => {
     setDialogMode('edit');
-    setSelectedMachine(machine);
+    setSelectedCustomer(customer);
     setIsDialogOpen(true);
   }, []);
 
   const handleCloseDialog = useCallback(() => {
     setIsDialogOpen(false);
-    setSelectedMachine(null);
+    setSelectedCustomer(null);
   }, []);
 
   // Loading component
   const LoadingSpinner = () => (
     <div className="flex items-center justify-center h-32">
       <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      <span className="ml-2 text-muted-foreground">Loading machines...</span>
+      <span className="ml-2 text-muted-foreground">Loading customers...</span>
     </div>
   );
 
   // Memoized table props
   const tableProps = useMemo(() => ({
-    data: machines,
+    data: customers,
     columns,
-    isLoading: isMachinesLoading || isMachinesFetching,
-    addLabel: "Add Machine",
+    isLoading: isCustomersLoading || isCustomersFetching,
+    addLabel: "Add Customer",
     onAddClick: handleOpenAddDialog,
     onEditClick: handleOpenEditDialog,
     page: currentPage,
@@ -184,13 +156,13 @@ export function MachineInventoryPage() {
     showPagination: true,
     showRowsPerPage: true,
     showSearch: true,
-    searchColumn: "machineName",
-    searchPlaceholder: "Search by machine name..."
+    searchColumn: "customerName",
+    searchPlaceholder: "Search by customer name..."
   }), [
-    machines,
+    customers,
     columns,
-    isMachinesLoading,
-    isMachinesFetching,
+    isCustomersLoading,
+    isCustomersFetching,
     handleOpenAddDialog,
     handleOpenEditDialog,
     currentPage,
@@ -208,22 +180,20 @@ export function MachineInventoryPage() {
     <div className="container mx-auto py-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Machine Inventory</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Customer Inventory</h1>
           <p className="text-muted-foreground">
-            Total Machines: {totalItems}
+            Total Customers: {totalItems}
           </p>
         </div>
         <div className="flex items-center gap-2">
           <Button 
             variant="outline" 
             onClick={() => {
-              // Trigger a refetch of both queries
               addMutation.reset();
-              updateMutation.reset();
             }}
-            disabled={isMachinesFetching}
+            disabled={isCustomersFetching}
           >
-            {isMachinesFetching ? (
+            {isCustomersFetching ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Refreshing...
@@ -232,47 +202,47 @@ export function MachineInventoryPage() {
               "Refresh"
             )}
           </Button>
-          <Button onClick={handleOpenAddDialog}>Add Machine</Button>
+          <Button onClick={handleOpenAddDialog}>Add Customer</Button>
         </div>
       </div>
 
-        <AddMachineDialog
+      <AddCustomerDialog
         open={isDialogOpen}
         onOpenChange={handleCloseDialog}
-          onSubmit={handleMachineSubmit}
-        initialData={selectedMachine || undefined}
-          mode={dialogMode}
-        />
+        onSubmit={handleCustomerSubmit}
+        initialData={selectedCustomer || undefined}
+        mode={dialogMode}
+      />
 
       <Card>
         <CardHeader>
-          <CardTitle>Machines</CardTitle>
+          <CardTitle>Customers</CardTitle>
           <CardDescription>
-            {isMachinesLoading || isMachinesFetching ? (
+            {isCustomersLoading || isCustomersFetching ? (
               <div className="flex items-center">
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Loading machines...
+                Loading customers...
               </div>
-            ) : machines.length === 0 ? (
+            ) : customers.length === 0 ? (
               <div className="text-muted-foreground">
                 {isCountLoading 
                   ? "Loading initial data..."
-                  : `No machines found ${currentPage > 1 ? `on page ${currentPage}` : ''}`}
+                  : `No customers found ${currentPage > 1 ? `on page ${currentPage}` : ''}`}
               </div>
             ) : (
-              `Showing ${machines.length} machines on page ${currentPage} of ${totalPages}`
+              `Showing ${customers.length} customers on page ${currentPage} of ${totalPages}`
             )}
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {isMachinesLoading || isMachinesFetching ? (
+          {isCustomersLoading || isCustomersFetching ? (
             <LoadingSpinner />
-          ) : machines.length === 0 ? (
+          ) : customers.length === 0 ? (
             <div className="flex items-center justify-center h-32">
               <p className="text-muted-foreground">
                 {currentPage > 1 
-                  ? "No machines found on this page. Try going back to the first page."
-                  : "No machines found. Add a new machine to get started."}
+                  ? "No customers found on this page. Try going back to the first page."
+                  : "No customers found. Add a new customer to get started."}
               </p>
             </div>
           ) : (

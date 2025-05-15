@@ -8,49 +8,51 @@ import { FormControl, FormField, FormItem, FormLabel } from "../ui/form";
 import { Switch } from "@/components/ui/switch"
 
 
-// Define Machine type for props
-export type Machine = {
-  machineId: number;
-  machineName: string;
-  capacity: string;
-  configuration: string;
-  machineColor: string;
+// Define Customer type for props
+export type Customer = {
+  customerId: number;
+  customerName: string;
+  address: string;
+  pincode: string;
+  ph_number: string;
+  city: string;
   active: number;
-  updDatetime: string;
+  addDatetime: string;
 };
 
-interface AddOrEditMachineDialogProps {
+interface AddOrEditCustomerDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (data: Machine, mode: "add" | "edit") => Promise<void>;
-  initialData?: Partial<Machine>;
+  onSubmit: (data: Customer, mode: "add" | "edit") => Promise<void>;
+  initialData?: Partial<Customer>;
   mode: "add" | "edit";
 }
 
 // Initial form state
-const getInitialFormState = (initialData: Partial<Machine> = {}): Machine => ({
-  machineId: initialData.machineId || 0,
-  machineName: initialData.machineName || "",
-  capacity: initialData.capacity || "",
-  configuration: initialData.configuration || "",
-  machineColor: initialData.machineColor || "",
+const getInitialFormState = (initialData: Partial<Customer> = {}): Customer => ({
+  customerId: initialData.customerId || 0,
+  customerName: initialData.customerName || "",
+  address: initialData.address || "",
+  pincode: initialData.pincode || "",
+  ph_number: initialData.ph_number || "",
+  city: initialData.city || "",
   active: initialData.active ?? 1,
-  updDatetime: initialData.updDatetime || new Date().toISOString(),
+  addDatetime: initialData.addDatetime || new Date().toISOString(),
 });
 
-export function AddMachineDialog({
+export function AddCustomerDialog({
   open,
   onOpenChange,
   onSubmit,
   initialData = {},
   mode,
-}: AddOrEditMachineDialogProps) {
+}: AddOrEditCustomerDialogProps) {
   // Use ref to track if component is mounted and prevent state updates after unmount
   const mounted = useRef(false);
   const initialDataRef = useRef(initialData);
 
   // Initialize form state
-  const [form, setForm] = useState<Machine>(() => getInitialFormState(initialData));
+  const [form, setForm] = useState<Customer>(() => getInitialFormState(initialData));
   const [loading, setLoading] = useState(false);
   // Validation state
   const [nameChecking, setNameChecking] = useState(false);
@@ -69,21 +71,19 @@ export function AddMachineDialog({
   // Only update form when dialog opens with new initialData
   useEffect(() => {
     if (!mounted.current || !open) return;
-
     // Only update if initialData has actually changed
     const currentInitialData = JSON.stringify(initialDataRef.current);
     const newInitialData = JSON.stringify(initialData);
-
     if (currentInitialData !== newInitialData) {
       initialDataRef.current = initialData;
       setForm(getInitialFormState(initialData));
     }
   }, [open, initialData]);
 
-  // Real-time machine name validation
+  // Real-time customer name validation
   useEffect(() => {
     if (!open) return;
-    if (!form.machineName || form.machineName === initialData.machineName) {
+    if (!form.customerName || form.customerName === initialData.customerName) {
       setNameError(null);
       setNameValid(true);
       return;
@@ -94,7 +94,7 @@ export function AddMachineDialog({
     if (nameCheckTimeout.current) clearTimeout(nameCheckTimeout.current);
     nameCheckTimeout.current = setTimeout(async () => {
       try {
-        const data = await apiFetch(`/machine/checkMachineName?machineName=${encodeURIComponent(form.machineName)}`) as any;
+        const data = await apiFetch(`/customer/checkcustomerName?customerName=${encodeURIComponent(form.customerName)}`) as any;
         if (data.code === 500) {
           setNameError(data.message || "Already Exists");
           setNameValid(false);
@@ -113,11 +113,10 @@ export function AddMachineDialog({
       if (nameCheckTimeout.current) clearTimeout(nameCheckTimeout.current);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [form.machineName, open]);
+  }, [form.customerName, open]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!mounted.current) return;
-
     const { name, value, type } = e.target;
     setForm(prev => ({
       ...prev,
@@ -151,17 +150,17 @@ export function AddMachineDialog({
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{mode === "add" ? "Add New Machine" : "Update Machine"}</DialogTitle>
+          <DialogTitle>{mode === "add" ? "Add New Customer" : "Update Customer"}</DialogTitle>
           <DialogDescription>
-            Fill in the details below to {mode === "add" ? "add a new" : "update the"} machine.
+            Fill in the details below to {mode === "add" ? "add a new" : "update the"} customer.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Input
-              name="machineName"
-              placeholder="Machine Name"
-              value={form.machineName}
+              name="customerName"
+              placeholder="Customer Name"
+              value={form.customerName}
               onChange={handleChange}
               required={true}
               disabled={loading}
@@ -172,30 +171,38 @@ export function AddMachineDialog({
             {nameError && (
               <div className="text-xs text-red-500 mt-1">{nameError}</div>
             )}
-            {nameValid && !nameError && form.machineName && (
+            {nameValid && !nameError && form.customerName && (
               <div className="text-xs text-green-600 mt-1">Name is available</div>
             )}
           </div>
           <Input
-            name="capacity"
-            placeholder="Capacity"
-            value={form.capacity}
+            name="address"
+            placeholder="Address"
+            value={form.address}
             onChange={handleChange}
             required={true}
             disabled={loading}
           />
           <Input
-            name="configuration"
-            placeholder="Configuration"
-            value={form.configuration}
+            name="pincode"
+            placeholder="Pincode"
+            value={form.pincode}
             onChange={handleChange}
             required={true}
             disabled={loading}
           />
           <Input
-            name="machineColor"
-            placeholder="Color"
-            value={form.machineColor}
+            name="ph_number"
+            placeholder="Phone Number"
+            value={form.ph_number}
+            onChange={handleChange}
+            required={true}
+            disabled={loading}
+          />
+          <Input
+            name="city"
+            placeholder="City"
+            value={form.city}
             onChange={handleChange}
             required={true}
             disabled={loading}
@@ -204,7 +211,7 @@ export function AddMachineDialog({
             <div className="space-y-0.5">
               <span className="text-base">Active Status</span>
               <div className="text-sm text-muted-foreground">
-                Enable or disable this machine
+                Enable or disable this customer
               </div>
             </div>
             <Switch
@@ -215,7 +222,7 @@ export function AddMachineDialog({
           </div>
           <DialogFooter>
             <Button type="submit" disabled={loading || !nameValid}>
-              {loading ? (mode === "add" ? "Adding..." : "Updating...") : (mode === "add" ? "Add Machine" : "Update Machine")}
+              {loading ? (mode === "add" ? "Adding..." : "Updating...") : (mode === "add" ? "Add Customer" : "Update Customer")}
             </Button>
           </DialogFooter>
         </form>
