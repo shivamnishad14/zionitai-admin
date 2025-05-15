@@ -5,12 +5,13 @@ import { Header } from '../layout/header'
 import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
 import { ProfileDropdown } from '@/components/profile-dropdown'
+import UsersProvider from '@/features/users/context/users-context'
 
 export default function MainInventory() {
   return (
     <>
-    <div>
-    <Header fixed>
+    <UsersProvider>
+      <Header fixed>
         <Search />
         <div className='ml-auto flex items-center space-x-4'>
           <ThemeSwitch />
@@ -47,7 +48,7 @@ export default function MainInventory() {
           </TabsContent>
         </Tabs>
       </Main>
-      </div>
+      </UsersProvider>
     </>
   )
 }

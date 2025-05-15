@@ -183,17 +183,11 @@ export function DataTable<T extends object>({
     return cols;
   }, [columns, showActions, actionComponents, showEdit, showDelete, showView, onEditClick, onDeleteClick, onViewClick, getDisabledKeys]);
 
-  // Calculate paginated data
-  const paginatedData = useMemo(() => {
-    if (!pagination) return data;
-    
-    const startIndex = (page - 1) * rowsPerPage;
-    const endIndex = startIndex + rowsPerPage;
-    return data.slice(startIndex, endIndex);
-  }, [data, page, rowsPerPage, pagination]);
+  // Use data directly (parent handles pagination)
+  const paginatedData = data;
 
   const table = useReactTable({
-    data: paginatedData, // Use paginated data instead of all data
+    data: paginatedData, // Use data directly
     columns: tableColumns,
     state: {
       sorting,

@@ -56,6 +56,11 @@ export const sidebarData: SidebarData = {
         //   url: '/apps',
         //   icon: IconPackages,
         // },
+        {
+          title: 'Roles',
+          url: '/roles',
+          icon: IconPackages,
+        },
         // {
         //   title: 'Chats',
         //   url: '/chats',
