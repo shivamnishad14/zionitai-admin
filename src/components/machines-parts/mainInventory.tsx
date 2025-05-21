@@ -1,6 +1,6 @@
 // import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Main } from '@/components/layout/main'
-import { RoleInventoryPage } from '@/components/roles/RoleInventoryPage'
+import { MachineComponentInventoryPage } from '@/components/machines-parts/machine_componentInventoryPage'
 import { Header } from '../layout/header'
 import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
@@ -23,11 +23,11 @@ export default function MainInventory() {
 
       <Main>
         <div className='mb-2 flex items-center justify-between space-y-2'>
-          <h1 className='text-2xl font-bold tracking-tight'>Role Inventory</h1>
+          <h1 className='text-2xl font-bold tracking-tight'>Machine Component Inventory</h1>
         </div>
 
 
-        <RoleInventoryPage />
+        <MachineComponentInventoryPage />
 
       </Main>
     </>

@@ -65,6 +65,11 @@ export const sidebarData: SidebarData = {
           icon: IconServer,
         },
         {
+          title: 'Machine Part Inventory',
+          url: '/machine-parts',
+          icon: IconServer,
+        },
+        {
           title: 'Parts Inventory',
           url: '/parts',
           icon: IconServer,

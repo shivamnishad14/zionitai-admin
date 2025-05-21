@@ -29,6 +29,7 @@ import { Route as AuthenticatedTasksIndexImport } from './routes/_authenticated/
 import { Route as AuthenticatedSettingsIndexImport } from './routes/_authenticated/settings/index'
 import { Route as AuthenticatedRolesIndexImport } from './routes/_authenticated/roles/index'
 import { Route as AuthenticatedPartsIndexImport } from './routes/_authenticated/parts/index'
+import { Route as AuthenticatedMachinePartsIndexImport } from './routes/_authenticated/machine-parts/index'
 import { Route as AuthenticatedHelpCenterIndexImport } from './routes/_authenticated/help-center/index'
 import { Route as AuthenticatedCustomersIndexImport } from './routes/_authenticated/customers/index'
 import { Route as AuthenticatedChatsIndexImport } from './routes/_authenticated/chats/index'
@@ -151,6 +152,13 @@ const AuthenticatedPartsIndexRoute = AuthenticatedPartsIndexImport.update({
   path: '/parts/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+
+const AuthenticatedMachinePartsIndexRoute =
+  AuthenticatedMachinePartsIndexImport.update({
+    id: '/machine-parts/',
+    path: '/machine-parts/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 const AuthenticatedHelpCenterIndexRoute =
   AuthenticatedHelpCenterIndexImport.update({
@@ -370,6 +378,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedHelpCenterIndexImport
       parentRoute: typeof AuthenticatedRouteImport
     }
+    '/_authenticated/machine-parts/': {
+      id: '/_authenticated/machine-parts/'
+      path: '/machine-parts'
+      fullPath: '/machine-parts'
+      preLoaderRoute: typeof AuthenticatedMachinePartsIndexImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
     '/_authenticated/parts/': {
       id: '/_authenticated/parts/'
       path: '/parts'
@@ -441,6 +456,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedChatsIndexRoute: typeof AuthenticatedChatsIndexRoute
   AuthenticatedCustomersIndexRoute: typeof AuthenticatedCustomersIndexRoute
   AuthenticatedHelpCenterIndexRoute: typeof AuthenticatedHelpCenterIndexRoute
+  AuthenticatedMachinePartsIndexRoute: typeof AuthenticatedMachinePartsIndexRoute
   AuthenticatedPartsIndexRoute: typeof AuthenticatedPartsIndexRoute
   AuthenticatedRolesIndexRoute: typeof AuthenticatedRolesIndexRoute
   AuthenticatedTasksIndexRoute: typeof AuthenticatedTasksIndexRoute
@@ -455,6 +471,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedChatsIndexRoute: AuthenticatedChatsIndexRoute,
   AuthenticatedCustomersIndexRoute: AuthenticatedCustomersIndexRoute,
   AuthenticatedHelpCenterIndexRoute: AuthenticatedHelpCenterIndexRoute,
+  AuthenticatedMachinePartsIndexRoute: AuthenticatedMachinePartsIndexRoute,
   AuthenticatedPartsIndexRoute: AuthenticatedPartsIndexRoute,
   AuthenticatedRolesIndexRoute: AuthenticatedRolesIndexRoute,
   AuthenticatedTasksIndexRoute: AuthenticatedTasksIndexRoute,
@@ -487,6 +504,7 @@ export interface FileRoutesByFullPath {
   '/chats': typeof AuthenticatedChatsIndexRoute
   '/customers': typeof AuthenticatedCustomersIndexRoute
   '/help-center': typeof AuthenticatedHelpCenterIndexRoute
+  '/machine-parts': typeof AuthenticatedMachinePartsIndexRoute
   '/parts': typeof AuthenticatedPartsIndexRoute
   '/roles': typeof AuthenticatedRolesIndexRoute
   '/settings/': typeof AuthenticatedSettingsIndexRoute
@@ -515,6 +533,7 @@ export interface FileRoutesByTo {
   '/chats': typeof AuthenticatedChatsIndexRoute
   '/customers': typeof AuthenticatedCustomersIndexRoute
   '/help-center': typeof AuthenticatedHelpCenterIndexRoute
+  '/machine-parts': typeof AuthenticatedMachinePartsIndexRoute
   '/parts': typeof AuthenticatedPartsIndexRoute
   '/roles': typeof AuthenticatedRolesIndexRoute
   '/settings': typeof AuthenticatedSettingsIndexRoute
@@ -546,6 +565,7 @@ export interface FileRoutesById {
   '/_authenticated/chats/': typeof AuthenticatedChatsIndexRoute
   '/_authenticated/customers/': typeof AuthenticatedCustomersIndexRoute
   '/_authenticated/help-center/': typeof AuthenticatedHelpCenterIndexRoute
+  '/_authenticated/machine-parts/': typeof AuthenticatedMachinePartsIndexRoute
   '/_authenticated/parts/': typeof AuthenticatedPartsIndexRoute
   '/_authenticated/roles/': typeof AuthenticatedRolesIndexRoute
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
@@ -578,6 +598,7 @@ export interface FileRouteTypes {
     | '/chats'
     | '/customers'
     | '/help-center'
+    | '/machine-parts'
     | '/parts'
     | '/roles'
     | '/settings/'
@@ -605,6 +626,7 @@ export interface FileRouteTypes {
     | '/chats'
     | '/customers'
     | '/help-center'
+    | '/machine-parts'
     | '/parts'
     | '/roles'
     | '/settings'
@@ -634,6 +656,7 @@ export interface FileRouteTypes {
     | '/_authenticated/chats/'
     | '/_authenticated/customers/'
     | '/_authenticated/help-center/'
+    | '/_authenticated/machine-parts/'
     | '/_authenticated/parts/'
     | '/_authenticated/roles/'
     | '/_authenticated/settings/'
@@ -703,6 +726,7 @@ export const routeTree = rootRoute
         "/_authenticated/chats/",
         "/_authenticated/customers/",
         "/_authenticated/help-center/",
+        "/_authenticated/machine-parts/",
         "/_authenticated/parts/",
         "/_authenticated/roles/",
         "/_authenticated/tasks/",
@@ -788,6 +812,10 @@ export const routeTree = rootRoute
     },
     "/_authenticated/help-center/": {
       "filePath": "_authenticated/help-center/index.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/machine-parts/": {
+      "filePath": "_authenticated/machine-parts/index.tsx",
       "parent": "/_authenticated"
     },
     "/_authenticated/parts/": {

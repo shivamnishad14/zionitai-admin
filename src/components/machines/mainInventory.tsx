@@ -10,10 +10,12 @@ import UsersProvider from '@/features/users/context/users-context'
 export default function MainInventory() {
   return (
     <>
-    <UsersProvider>
-      <Header fixed>
-        <Search />
+   
+       {/* ===== Top Heading ===== */}
+       <Header>
+        {/* <TopNav links={topNav} /> */}
         <div className='ml-auto flex items-center space-x-4'>
+          <Search />
           <ThemeSwitch />
           <ProfileDropdown />
         </div>
@@ -48,7 +50,6 @@ export default function MainInventory() {
           </TabsContent>
         </Tabs>
       </Main>
-      </UsersProvider>
     </>
   )
 }

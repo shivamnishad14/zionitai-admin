@@ -2,7 +2,7 @@ import { HTMLAttributes, useState } from 'react'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Link } from '@tanstack/react-router'
+import { Link, useNavigate } from '@tanstack/react-router'
 import { IconBrandFacebook, IconBrandGithub } from '@tabler/icons-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -16,14 +16,15 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/password-input'
+import { useMutation } from '@tanstack/react-query'
+import { apiFetch } from '@/api/client'
 
 type UserAuthFormProps = HTMLAttributes<HTMLFormElement>
 
 const formSchema = z.object({
-  email: z
+  userId: z
     .string()
-    .min(1, { message: 'Please enter your email' })
-    .email({ message: 'Invalid email address' }),
+    .min(1, { message: 'Please enter your username' }),
   password: z
     .string()
     .min(1, {
@@ -35,24 +36,41 @@ const formSchema = z.object({
 })
 
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
-  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
+
+  const loginMutation = useMutation({
+    mutationFn: async (data: { userId: string; password: string }) => {
+      return apiFetch<any>('/login/signIn', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+    },
+    onSuccess: (result) => {
+      if (result.token) {
+        localStorage.setItem('authToken', result.token);
+        navigate({ to: '/' }); // Change to your dashboard/home route
+      } else {
+        setError(result.message || 'Invalid credentials');
+      }
+    },
+    onError: () => {
+      setError('Login failed. Please try again.');
+    },
+  });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: '',
+      userId: '',
       password: '',
     },
   })
 
   function onSubmit(data: z.infer<typeof formSchema>) {
-    setIsLoading(true)
-    // eslint-disable-next-line no-console
-    console.log(data)
-
-    setTimeout(() => {
-      setIsLoading(false)
-    }, 3000)
+    setError(null);
+    loginMutation.mutate(data);
   }
 
   return (
@@ -64,12 +82,12 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
       >
         <FormField
           control={form.control}
-          name='email'
+          name='userId'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>Username</FormLabel>
               <FormControl>
-                <Input placeholder='name@example.com' {...field} />
+                <Input placeholder='Enter your username' {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -94,8 +112,9 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
             </FormItem>
           )}
         />
-        <Button className='mt-2' disabled={isLoading}>
-          Login
+        {error && <div className='text-red-500 text-sm'>{error}</div>}
+        <Button className='mt-2' disabled={loginMutation.status === 'pending'} type="submit">
+          {loginMutation.status === 'pending' ? 'Logging in...' : 'Login'}
         </Button>
 
         <div className='relative my-2'>
@@ -110,10 +129,10 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
         </div>
 
         <div className='grid grid-cols-2 gap-2'>
-          <Button variant='outline' type='button' disabled={isLoading}>
+          <Button variant='outline' type='button' disabled={loginMutation.status === 'pending'}>
             <IconBrandGithub className='h-4 w-4' /> GitHub
           </Button>
-          <Button variant='outline' type='button' disabled={isLoading}>
+          <Button variant='outline' type='button' disabled={loginMutation.status === 'pending'}>
             <IconBrandFacebook className='h-4 w-4' /> Facebook
           </Button>
         </div>

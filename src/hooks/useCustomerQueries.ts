@@ -41,7 +41,19 @@ export function useCustomerMutations() {
     },
   });
 
-  // You can add update/delete mutations here if needed
+  // You can add update/delete mutations here 
+  const updateMutation = useMutation({
+    mutationFn: (customer: Customer) => apiFetch<any>('/customer/updateMachine', {
+      method: 'POST', // or 'PUT' if your API expects it
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(customer),
+    }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['customers'] });
+      queryClient.invalidateQueries({ queryKey: ['customerCount'] });
+    },
+  });
 
-  return { addMutation };
+  return { addMutation, updateMutation };
 } 
+

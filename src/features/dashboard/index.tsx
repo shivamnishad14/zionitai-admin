@@ -15,10 +15,12 @@ import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
 import { Overview } from './components/overview'
 import { RecentSales } from './components/recent-sales'
+import { RequireAuth } from '../auth/RequireAuth'
 
 export default function Dashboard() {
   return (
     <>
+    <RequireAuth>
       {/* ===== Top Heading ===== */}
       <Header>
         <TopNav links={topNav} />
@@ -190,6 +192,7 @@ export default function Dashboard() {
           </TabsContent>
         </Tabs>
       </Main>
+      </RequireAuth>
     </>
   )
 }

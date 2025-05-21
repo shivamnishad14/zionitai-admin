@@ -17,7 +17,7 @@ interface Props {
   children: React.ReactNode
 }
 
-export default function UsersProvider({ children }: Props) {
+export default function     UsersProvider({ children }: Props) {
   const [open, setOpen] = useDialogState<UsersDialogType>(null)
   const [currentRow, setCurrentRow] = useState<User | null>(null)
 
